@@ -1,0 +1,82 @@
+from collections import deque
+
+# Function to print the board (for debugging purposes)
+def print_board(board):
+    for row in board:
+        print(" ".join(row))
+    print()
+
+# Function to check if the board state is a winning state for the given player
+def is_winner(board, player):
+    for i in range(3):
+        if all([cell == player for cell in board[i]]):  # Check rows
+            return True
+        if all([board[j][i] == player for j in range(3)]):  # Check columns
+            return True
+    if all([board[i][i] == player for i in range(3)]):  # Check main diagonal
+        return True
+    if all([board[i][2 - i] == player for i in range(3)]):  # Check anti-diagonal
+        return True
+    return False
+
+# Function to check if the board state is a draw
+def is_draw(board):
+    return all(cell != ' ' for row in board for cell in row)
+
+# Function to get the next player
+def next_player(player):
+    return 'O' if player == 'X' else 'X'
+
+# Function to generate all possible next states from the current board state
+def get_next_states(board, player):
+    next_states = []
+    for i in range(3):
+        for j in range(3):
+            if board[i][j] == ' ':
+                new_board = [row[:] for row in board]
+                new_board[i][j] = player
+                next_states.append((new_board, (i, j)))
+    return next_states
+
+# BFS to find the shortest sequence of moves to a winning or drawn state
+def bfs_tic_tac_toe(initial_board, initial_player):
+    queue = deque([(initial_board, [], initial_player)])
+    visited = set()
+
+    while queue:
+        current_board, moves, current_player = queue.popleft()
+        board_tuple = tuple(tuple(row) for row in current_board)
+
+        if board_tuple in visited:
+            continue
+
+        visited.add(board_tuple)
+
+        if is_winner(current_board, 'X'):
+            return moves + ['X wins']
+        if is_winner(current_board, 'O'):
+            return moves + ['O wins']
+        if is_draw(current_board):
+            return moves + ['Draw']
+
+        next_turn = next_player(current_player)
+        for new_board, move in get_next_states(current_board, current_player):
+            queue.append((new_board, moves + [f"{current_player} to {move}"], next_turn))
+
+    return "No solution found"
+
+# Example usage:
+initial_board = [
+    ['X', 'O', 'X'],
+    ['O', 'X', ' '],
+    [' ', ' ', 'O']
+]
+initial_player = 'X'
+result = bfs_tic_tac_toe(initial_board, initial_player)
+
+if isinstance(result, list):
+    print("Solution found:")
+    for step in result:
+        print(step)
+else:
+    print(result)
