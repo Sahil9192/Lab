@@ -1,0 +1,37 @@
+import numpy as np
+import pandas as pd
+from PIL import Image
+from autoviz.AutoViz_Class import AutoViz_Class
+import sweetviz as sv
+
+
+def extract_rgb(image_path):
+    img = Image.open(image_path).resize((100, 100)) 
+    return np.array(img).reshape(-1, 3)  
+
+
+def create_rgb_dataframe(rgb_values):
+    return pd.DataFrame(rgb_values, columns=['Red', 'Green', 'Blue'])
+
+
+def analyze_with_autoviz(df):
+    AV = AutoViz_Class()
+    AV.AutoViz(df)
+
+
+def analyze_with_sweetviz(df):
+    report = sv.analyze(df)
+    report.show_notebook()
+
+
+def main(image_path):
+    rgb_values = extract_rgb(image_path)
+    df = create_rgb_dataframe(rgb_values)
+    display(df.head())  
+    analyze_with_autoviz(df)
+    analyze_with_sweetviz(df)
+
+
+image_path = 'path_to_your_image.jpg'
+main(image_path)
+
