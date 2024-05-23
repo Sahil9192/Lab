@@ -1,0 +1,32 @@
+def is_valid(board,row,col):
+    for i in range(row):
+        if board[i] == col or \
+            board[i] - i == col - row or \
+            board[i] + i == col + row:
+                return False
+    return True
+def solve_n_queen(N):
+    def backtrack(row):
+        if row == N:
+            solutions.append(board[:])
+            return
+        for col in range(N):
+            if is_valid(board, row, col):
+                board[row] = col
+                backtrack(row+1)
+                board[row] = -1
+    solutions = []
+    board = [-1] * N
+    backtrack(0)
+    return solutions
+def print_solutions(solutions,N):
+    for sol in solutions:
+        for i in range(N):
+            row = ['.'] * N
+            row[sol[i]] = 'Q'
+            print(' '.join(row))
+        print("\n")
+N = int(input("Enter the value of N: "))
+solutions = solve_n_queen(N)
+print(f"Total solutions: {len(solutions)}\n")
+print_solutions(solutions, N)
