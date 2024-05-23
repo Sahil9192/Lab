@@ -1,0 +1,18 @@
+def greedy_interval_scheduling(tasks):
+    tasks.sort(key = lambda x:x[1])
+    solution = list()
+    finish_time = 0
+    for task in tasks:
+        start , end = task
+        if start >= finish_time:
+            solution.append(task)
+            finish_time = end
+    return solution
+tasks = list()
+for i in range(int(input("Enter number of task: "))):
+    start = int(input("Enter starting time: "))
+    end = int(input("Enter ending time: "))
+    tasks.append((start,end))
+    print()
+optimal_solution = greedy_interval_scheduling(tasks)
+print("Optimal Solution:", optimal_solution)
