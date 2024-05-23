@@ -1,0 +1,54 @@
+def is_valid_move(piles, move):
+    return 1 <= move <= 3 and move <= piles
+def minimax(piles, is_maximizing):
+    if piles == 0:
+        return -1 if is_maximizing else 1
+    if is_maximizing:
+        best_value = -float('inf')  
+        for move in range(1, 4):
+            if is_valid_move(piles, move):
+                value = minimax(piles - move, False)
+                best_value = max(best_value, value) 
+        return best_value
+    else:  
+        best_value = float('inf')  
+        for move in range(1, 4):
+            if is_valid_move(piles, move):
+                value = minimax(piles - move, True)
+                best_value = min(best_value, value)  
+        return best_value
+
+def find_best_move(piles):
+    best_move = -1
+    best_value = -float('inf')
+    for move in range(1, 4):
+        if is_valid_move(piles, move):
+            value = minimax(piles - move, False)
+            if value > best_value:
+                best_value = value
+                best_move = move
+    return best_move
+
+def play_nim():
+    piles = int(input("Enter the number of stones in the pile: "))
+    while piles > 0:
+        print(f"\nCurrent pile: {piles} stones")
+
+        player_move = int(input("Your turn. Take 1, 2, or 3 stones: "))
+        if not is_valid_move(piles, player_move):
+            print("Invalid move! Try again.")
+            continue
+        piles -= player_move
+        if piles == 0:
+            print("You took the last stone. You lose!")
+            break
+   
+        computer_move = find_best_move(piles)
+        print(f"Computer's turn. It takes {computer_move} stones.")
+        piles -= computer_move
+        if piles == 0:
+            print("Computer took the last stone. You win!")
+            break
+
+if __name__ == "__main__":
+    play_nim()
