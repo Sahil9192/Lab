@@ -1,0 +1,69 @@
+import heapq
+goal_state = [[1,2,3],
+             [4,5,6],
+             [7,8,9]]
+def find_blank(state):
+    for i in range(3):
+        for j in range(3):
+            if state[i][j] == 0:
+                return (i,j)
+def misplaced_tiles(state,goal):
+    count = 0
+    for i in range(3):
+        for j in range(3):
+            if state[i][j] != 0 and state[i][j] != goal[i][j]:
+                count += 1
+    return count             
+def generate_moves(state):
+    blank_pos = find_blank(state)
+    i, j = blank_pos
+    moves = []
+    if i > 0:
+        new_state = [row[:] for row in state]
+        new_state[i][j], new_state[i-1][j] = new_state[i-1][j] , new_state[i][j]
+        moves.append(new_state)
+    if i < 2:
+        new_state = [row[:] for row in state]
+        new_state[i][j], new_state[i+1][j] = new_state[i+1][j], new_state[i][j]
+        moves.append(new_state)
+    if j > 0:
+        new_state = [row[:] for row in state]
+        new_state[i][j], new_state[i][j-1] = new_state[i][j-1], new_state[i][j]
+        moves.append(new_state)
+    if j < 2:
+        new_state = [row[:] for row in state]
+        new_state[i][j], new_state[i][j+1] = new_state[i][j+1], new_state[i][j]
+        moves.append(new_state)
+    return moves
+def is_goal(state):
+    return state == goal_state
+def best_first_search(initial_state):
+    pq = []
+    heapq.heappush(pq, (misplaced_tiles(initial_state, goal_state), initial_state))
+    visited = set()
+    visited.add(tuple(map(tuple, initial_state)))
+
+    while pq:
+        _, current_state = heapq.heappop(pq)
+        if is_goal(current_state):
+            return current_state
+
+        for move in generate_moves(current_state):
+            move_tuple = tuple(map(tuple, move))
+            if move_tuple not in visited:
+                visited.add(move_tuple)
+                heapq.heappush(pq, (misplaced_tiles(move, goal_state), move))
+
+    return None
+initial_state = [[1, 2, 3],
+                 [4, 5, 6],
+                 [7, 8, 9]]
+
+solution = best_first_search(initial_state)
+
+if solution:
+    print("Solution found!")
+    for row in solution:
+        print(row)
+else:
+    print("No solution found.")
